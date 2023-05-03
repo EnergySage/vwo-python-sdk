@@ -13,8 +13,12 @@
 # limitations under the License.
 
 """ Module for making requests, uses requests internally """
+import traceback
 
 import requests
+
+from vwo.enums import LogLevelEnum
+from vwo.logger import VWOLogger
 
 
 class Connection:
@@ -23,6 +27,7 @@ class Connection:
     def __init__(self):
         """ Initializes connection class with requests session object"""
         self.session = requests.Session()
+        self.logger = VWOLogger.getInstance()
 
     def get(self, url, params=None):
         """ Get method, it wraps upon requests' get method.
@@ -36,6 +41,8 @@ class Connection:
             resp = self.session.get(url, params=params)
             return {"status_code": resp.status_code, "text": resp.text}
         except Exception:
+            error_message = traceback.format_exc()
+            self.logger.log(LogLevelEnum.ERROR, error_message)
             return {"status_code": None, "text": ""}
 
     def post(self, url, params=None, data=None, headers=None):
@@ -53,4 +60,6 @@ class Connection:
 
             return {"status_code": resp.status_code, "text": resp.text}
         except Exception:
+            error_message = traceback.format_exc()
+            self.logger.log(LogLevelEnum.ERROR, error_message)
             return {"status_code": None, "text": ""}
