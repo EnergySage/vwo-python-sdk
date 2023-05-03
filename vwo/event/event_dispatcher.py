@@ -253,7 +253,11 @@ class EventDispatcher(object):
             else:
                 self.logger.log(LogLevelEnum.ERROR, LogMessageEnum.ERROR_MESSAGES.BULK_NOT_PROCESSED.format(file=FILE))
             if self.flush_callback:
-                self.flush_callback(None, events)
+                if status_code == 200:
+                    error = None
+                else:
+                    error = resp
+                self.flush_callback(error, events)
         except Exception as err:
             self.logger.log(LogLevelEnum.ERROR, LogMessageEnum.ERROR_MESSAGES.BULK_NOT_PROCESSED.format(file=FILE))
             if self.flush_callback:
